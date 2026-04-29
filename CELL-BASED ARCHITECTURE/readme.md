@@ -1,7 +1,7 @@
 
-# 📦 Cell-Based Architecture using Kubernetes
+#  Cell-Based Architecture using Kubernetes
 
-## 🚀 Project Overview
+##  Project Overview
 
 This project demonstrates the implementation of a **Cell-Based Architecture** using **Kubernetes (kind)** deployed on an **AWS EC2 instance**.
 
@@ -11,7 +11,7 @@ In this project, a **Mumbai cell** is fully deployed and active, while another c
 
 ---
 
-## 🧠 Architecture Concept
+## Architecture Concept
 
 Cell-Based Architecture is a design pattern where:
 
@@ -29,19 +29,19 @@ In this project:
 
 ---
 
-## 🛠️ Technologies Used
+##  Technologies Used
 
 * **AWS EC2** – Cloud server hosting the system
 * **Docker** – Container runtime
 * **Kubernetes (kind)** – Cluster setup inside EC2
-* **NGINX Ingress Controller** – Traffic routing
+* ** Ingress Controller** – Traffic routing
 * **Spring Boot** – Order Service backend
 * **MySQL** – Database for each cell
 * **kubectl** – Kubernetes CLI
 
 ---
 
-## 🏗️ System Architecture
+##  System Architecture
 
 ```
 Client (Postman / Browser)
@@ -61,31 +61,31 @@ Mumbai Namespace (Cell)
 
 ---
 
-## ⚙️ Kubernetes Implementation
+##  Kubernetes Implementation
 
 The following components were created:
 
-### 🔹 Cluster
+###  Cluster
 
 * Kubernetes cluster using **kind**
 * 1 control-plane + 1 worker node
 
-### 🔹 Namespaces (Cells)
+###  Namespaces (Cells)
 
 * `mumbai` → Active cell
 * `rest` → Inactive cell (for demonstration)
 
-### 🔹 Deployments
+###  Deployments
 
 * MySQL Deployment (mumbai)
 * Order Service Deployment (mumbai)
 
-### 🔹 Services
+###  Services
 
 * ClusterIP service for MySQL
 * ClusterIP service for Order Service
 
-### 🔹 Ingress
+###  Ingress
 
 * Path-based routing using NGINX Ingress
 * Route:
@@ -96,17 +96,17 @@ The following components were created:
 
 ---
 
-## ✨ Features
+##  Features
 
-* ✅ Cell-based isolation using namespaces
-* ✅ Independent database per cell
-* ✅ Path-based routing using ingress
-* ✅ External access using port-forward
-* ✅ Resource-aware architecture (inactive cell for optimization)
+*  Cell-based isolation using namespaces
+*  Independent database per cell
+*  Path-based routing using ingress
+*  External access using port-forward
+*  Resource-aware architecture (inactive cell for optimization)
 
 ---
 
-## 🔄 How It Works
+##  How It Works
 
 1. Client sends request to EC2 Public IP
 2. Request reaches **port-forwarded port (8080)**
@@ -119,15 +119,15 @@ The following components were created:
 
 ---
 
-## 📡 API Endpoints
+##  API Endpoints
 
-### 🔹 Get Orders
+###  Get Orders
 
 ```
 GET /mumbai/orders
 ```
 
-### 🔹 Create Order
+###  Create Order
 
 ```
 POST /mumbai/orders
@@ -145,7 +145,7 @@ Example JSON:
 
 ---
 
-## ▶️ How to Run the Project
+##  How to Run the Project
 
 ### 1. Setup EC2
 
@@ -203,7 +203,7 @@ http://EC2_PUBLIC_IP:8080/mumbai/orders
 
 ---
 
-## 🎯 Demonstration
+##  Demonstration
 
 * Insert data using POST request
 * Retrieve data using GET request
@@ -213,13 +213,13 @@ http://EC2_PUBLIC_IP:8080/mumbai/orders
 
 ---
 
-## ⚠️ Challenges Faced
+##  Challenges Faced
 
-* ❌ EC2 resource limitations (CPU exhaustion)
-* ❌ NodePort not accessible externally
-* ❌ Ingress path mismatch issues
+*  EC2 resource limitations (CPU exhaustion)
+*  NodePort not accessible externally
+*  Ingress path mismatch issues
 
-### ✅ Solutions
+###  Solutions
 
 * Used **port-forwarding for ingress**
 * Scaled down unused cells
@@ -227,7 +227,7 @@ http://EC2_PUBLIC_IP:8080/mumbai/orders
 
 ---
 
-## 📚 Learning Outcomes
+##  Learning Outcomes
 
 * Practical understanding of Kubernetes architecture
 * Namespace-based isolation (cell design)
@@ -237,7 +237,7 @@ http://EC2_PUBLIC_IP:8080/mumbai/orders
 
 ---
 
-## 🔮 Future Improvements
+##  Future Improvements
 
 * Add multiple active cells (Delhi, etc.)
 * Use **LoadBalancer** instead of port-forward
@@ -246,7 +246,7 @@ http://EC2_PUBLIC_IP:8080/mumbai/orders
 
 ---
 
-## 🏁 Conclusion
+##  Conclusion
 
 This project successfully demonstrates how **Cell-Based Architecture** can be implemented using Kubernetes.
 
@@ -256,17 +256,4 @@ It highlights:
 * Fault isolation
 * Cloud-native design principles
 
-The system reflects real-world distributed architectures used in modern cloud applications.
 
----
-
-🔥 Done. This is a **strong, professional README**.
-
----
-
-If you want next:
-
-* I can **shorten this for viva explanation (2–3 mins)**
-* Or help you create **architecture diagram for submission**
-
-Just tell me 👍
