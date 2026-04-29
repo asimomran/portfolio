@@ -311,3 +311,10 @@ Built as part of an advanced cloud + AI system project.
 ## ⭐ If you found this useful
 
 Give it a star ⭐ and explore further improvements!
+
+
+<img width="1710" height="1107" alt="Screenshot 2026-04-10 at 7 14 01 AM" src="https://github.com/user-attachments/assets/b70d8276-9397-47af-9c39-b83c45c6bb01" />
+
+<img width="1710" height="1107" alt="Screenshot 2026-04-10 at 10 07 28 AM" src="https://github.com/user-attachments/assets/e4316645-ee9a-44ba-adbe-22897bf8b329" />
+
+<img width="1710" height="1107" alt="Screenshot 2026-04-10 at 7 14 01 AM" src="https://github.com/user-attachments/assets/2b951e7b-7de7-4c19-9988-2d2dd7995961" />
