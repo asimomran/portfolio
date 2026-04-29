@@ -1,0 +1,175 @@
+import json
+import requests
+import boto3
+import os
+
+# ---------------- CONFIG ---------------- #
+
+s3 = boto3.client("s3")
+BUCKET_NAME = "ai-agent-storage-bucket"
+
+API_KEY = os.environ["OPENROUTER_API_KEY"]
+
+
+# ---------------- S3 MEMORY ---------------- #
+
+def load_memory(file_name):
+    try:
+        response = s3.get_object(Bucket=BUCKET_NAME, Key=file_name)
+        content = response["Body"].read().decode("utf-8")
+        return json.loads(content)
+    except:
+        return []
+
+
+def save_memory(file_name, data):
+    s3.put_object(
+        Bucket=BUCKET_NAME,
+        Key=file_name,
+        Body=json.dumps(data)
+    )
+
+
+# ---------------- SMART MEMORY EXTRACTION ---------------- #
+
+def extract_memory(user_input):
+    text = user_input.lower()
+
+    if "i like" in text:
+        return {
+            "type": "preference",
+            "category": "learning_style",
+            "value": text.replace("i like", "").strip(),
+            "confidence": 0.9
+        }
+
+    elif "i am" in text:
+        return {
+            "type": "identity",
+            "category": "user_info",
+            "value": text.replace("i am", "").strip(),
+            "confidence": 0.8
+        }
+
+    elif "i study" in text:
+        return {
+            "type": "interest",
+            "category": "education",
+            "value": text.replace("i study", "").strip(),
+            "confidence": 0.85
+        }
+
+    return None
+
+
+# ---------------- MAIN HANDLER ---------------- #
+
+def lambda_handler(event, context):
+
+    try:
+        body = json.loads(event.get("body", "{}"))
+        user_input = body.get("message", "")
+
+        # 🔹 Load memory
+        messages = load_memory("memory.json")
+        long_term_memory = load_memory("long_memory.json")
+
+        # 🔹 Extract memory
+        memory = extract_memory(user_input)
+
+        if memory:
+            exists = any(mem["value"] == memory["value"] for mem in long_term_memory)
+
+            if not exists:
+                long_term_memory.append(memory)
+
+                if len(long_term_memory) > 20:
+                    long_term_memory.pop(0)
+
+        # 🔹 Select relevant memory (last 5)
+        relevant_memory = long_term_memory[-5:]
+
+        memory_text = ""
+        for mem in relevant_memory:
+            memory_text += f"{mem['type']}: {mem['value']}\n"
+
+        # 🔹 Build personalized prompt
+        final_input = f"""
+You are a personal AI assistant.
+
+User memory:
+{memory_text}
+
+Respond in a personalized way based on the user's preferences.
+
+User question:
+{user_input}
+"""
+
+        # 🔹 Chat history
+        messages.append({
+            "role": "user",
+            "content": final_input
+        })
+
+        if len(messages) > 20:
+            messages = messages[-20:]
+
+        print("Calling OpenRouter...")
+
+        # 🔹 Call AI
+        try:
+            response = requests.post(
+                url="https://openrouter.ai/api/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {API_KEY}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "model": "openrouter/free",
+                    "messages": messages,
+                    "max_tokens": 500
+                },
+                timeout=25
+            )
+        except requests.exceptions.ReadTimeout:
+            return {
+                "statusCode": 200,
+                "body": json.dumps({
+                    "response": "AI is busy right now, please try again."
+                })
+            }
+
+        result = response.json()
+        print("AI response:", result)
+
+        if "choices" in result:
+            ai_reply = result["choices"][0]["message"]["content"]
+        else:
+            ai_reply = f"Error: {result}"
+
+        # 🔹 Store response
+        messages.append({
+            "role": "assistant",
+            "content": ai_reply
+        })
+
+        # 🔹 Save memory to S3
+        save_memory("memory.json", messages)
+        save_memory("long_memory.json", long_term_memory)
+
+        return {
+            "statusCode": 200,
+            "body": json.dumps({
+                "response": ai_reply
+            })
+        }
+
+    except Exception as e:
+        print("ERROR:", str(e))
+        return {
+            "statusCode": 500,
+            "body": json.dumps({
+                "response": f"Internal error: {str(e)}"
+            })
+        }
